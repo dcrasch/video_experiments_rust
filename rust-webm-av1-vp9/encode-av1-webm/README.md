@@ -21,3 +21,7 @@ webm_info -i output.webm
 ```
 apt install libvpx-dev libwebm-tools
 ```
+
+## TODO
+
+[ ] fix codecprivate data, this is required for an av1 stream inside webm, but I have no idea what to put there. 0x1 is valid?
