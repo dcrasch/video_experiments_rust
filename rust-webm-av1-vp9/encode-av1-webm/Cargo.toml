@@ -1,0 +1,10 @@
+[package]
+name = "encode-av1-webm"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+image = "0.25.5"
+rav1e = "0.7.0"
+webm = "2.0.0"
+yuvutils-rs = "0.8.1"
