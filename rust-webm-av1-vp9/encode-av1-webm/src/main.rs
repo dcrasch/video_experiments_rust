@@ -80,7 +80,8 @@ fn main() {
         .unwrap()
         .add_video_track(1920, 1080, VideoCodecId::AV1, Some(1))
         .unwrap();
-    let builder = builder.set_codec_private(video_track, &[0]).unwrap();
+    let data = ctx.container_sequence_header();
+    let builder = builder.set_codec_private(video_track, &data).unwrap();
 
     let mut segment = builder.build();
     // Write the encoded AV1 packets to the WebM file
