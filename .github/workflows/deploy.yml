@@ -16,7 +16,7 @@ jobs:
       contents: write
 
     container:
-      image: barichello/godot-ci:4.1.2
+      image: barichello/godot-ci:4.4.1
 
     steps:
       - name: Checkout
@@ -31,12 +31,6 @@ jobs:
 
       - name: Build
         run: godot -v --export-release --headless "Web" ../build/web/index.html kaleidoscope-godot/project.godot
-
-      - name: Add coi-service-worker
-        run: |
-          git clone https://github.com/gzuidhof/coi-serviceworker.git
-          mv coi-serviceworker/coi-serviceworker.js build/web/coi-serviceworker.js
-          sed -i '3 i <script src="coi-serviceworker.js"></script>' build/web/index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
