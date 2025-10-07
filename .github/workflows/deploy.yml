@@ -1,41 +1,45 @@
-name: "Publish to GitHub Pages"
+name: "godot-ci export"
+on: push
+
+# NOTE: If your `project.godot` is at the repository root, set `PROJECT_PATH` below to ".".
 
 env:
-  GODOT_VERSION: 4.1.2
-
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+  GODOT_VERSION: 4.3
+  EXPORT_NAME: kaleidoscope-godot
+  PROJECT_PATH: kaleidoscope-godot
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-24.04  # Use 24.04 with godot 4
     container:
       image: barichello/godot-ci:4.4.1
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Move HTML5 templates into position
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
-      - name: Create staging directory
-        run: mkdir -v -p build/web
-
-      - name: Build
-        run: godot -v --export-release --headless "Web" ../build/web/index.html kaleidoscope-godot/project.godot
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          force_orphan: true
-          commit_message: "Publish to gh-pages"
+          lfs: true
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+      - name: Web Build
+        run: |
+          mkdir -v -p build/web
+          EXPORT_DIR="$(readlink -f build)"
+          cd $PROJECT_PATH
+          godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: build/web
+      - name: Install rsync 📚
+        run: |
+          apt-get update && apt-get install -y rsync
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: build/web # The folder the action should deploy.
+          
