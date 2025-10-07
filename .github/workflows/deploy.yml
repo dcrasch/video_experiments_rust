@@ -1,5 +1,9 @@
 name: "godot-ci export"
-on: push
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 # NOTE: If your `project.godot` is at the repository root, set `PROJECT_PATH` below to ".".
 
