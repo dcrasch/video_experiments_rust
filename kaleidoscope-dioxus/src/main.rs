@@ -91,22 +91,56 @@ fn KaleidoscopeEditor() -> Element {
                         oninput: move |e| rotation.set(e.value().parse().unwrap()),
                     }
                     div { class: "original",
-                        img {
-                            src: "{ORIGINAL_IMAGE}",
-                            onclick: move |evt| {
-                                let click = evt.element_coordinates();
-                                let click_x = click.x;
-                                let click_y = click.y;
+                        svg {
+                            width: "200",
+                            height: "200",
+                            view_box: "0 0 200 200",
 
-                                let scale_x = 1450.0 as f64 / 100.0;
-                                let scale_y = 1082.0 as f64 / 75.0;
+                            image {
+                                class: "original",
+                                href: "{ORIGINAL_IMAGE}",
+                                x: "0",
+                                y: "0",
+                                width: "100",
+                                height: "75",
+                                preserve_aspect_ratio: "xMidYMid slice",
+                                onclick: move |evt| {
+                                    let click = evt.element_coordinates();
+                                    let click_x = click.x;
+                                    let click_y = click.y;
 
-                                let img_x = (click_x * scale_x).round() as u32;
-                                let img_y = (click_y * scale_y).round() as u32;
+                                    let scale_x = 1450.0 as f64 / 100.0;
+                                    let scale_y = 1082.0 as f64 / 75.0;
 
-                                offset_x.set(Some(img_x));
-                                offset_y.set(Some(img_y));
-                            },
+                                    let img_x = (click_x * scale_x).round() as u32;
+                                    let img_y = (click_y * scale_y).round() as u32;
+
+                                    offset_x.set(Some(img_x));
+                                    offset_y.set(Some(img_y));
+                                },
+                            }
+                            polyline {
+                                points: {
+                                    let scale_x = 1450.0 as f64 / 100.0;
+                                    let scale_y = 1082.0 as f64 / 75.0;
+
+                                    let x1 = offset_x().unwrap_or_default() as f64 / scale_x;
+                                    let y1 = offset_y().unwrap_or_default() as f64 / scale_y;
+
+                                    let theta2 = (rotation() as f64).to_radians();
+                                    let x2 = (x1 + 100.0 * theta2.cos()).clamp(0.0, 100.0);
+                                    let y2 = (y1 + 100.0 * theta2.sin()).clamp(0.0, 75.0);
+
+                                    let theta3 = theta2 + (360.0 / (segments() as f64)).to_radians();
+                                    let x3 = (x1 + 100.0 * theta3.cos()).clamp(0.0, 100.0);
+                                    let y3 = (y1 + 100.0 * theta3.sin()).clamp(0.0, 75.0);
+
+                                    format!("{x2},{y2} {x1},{y1} {x3},{y3}")
+                                },
+                                fill: "none",
+                                stroke: "black",
+                                stroke_width: "2",
+                            }
                         }
                     }
                 }

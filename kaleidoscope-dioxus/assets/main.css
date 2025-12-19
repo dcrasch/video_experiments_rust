@@ -33,8 +33,9 @@ viewer {
     image-rendering: auto;
 }
 
-.original img {
+.original {
     width: 100px;
+    height: 75px;
     object-fit: contain;
     image-rendering: auto;
 }
