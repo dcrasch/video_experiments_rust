@@ -1,6 +1,17 @@
 use image::{RgbImage, Rgb};
 use std::f64::consts::PI;
 
+#[inline]
+fn mirror(v: i32, max: i32) -> i32 {
+    // Mirror into [0, max)
+    let period = 2 * max;
+    let mut v = v.rem_euclid(period);
+    if v >= max {
+        v = period - v - 1;
+    }
+    v
+}
+
 pub fn kaleidoscope(
     img: &RgbImage,
     n: u32,
@@ -13,6 +24,9 @@ pub fn kaleidoscope(
 ) -> RgbImage {
     let (in_cols, in_rows) = (img.width() as i32, img.height() as i32);
     let (c_x, c_y) = c_in.unwrap_or((in_cols as u32 / 2, in_rows as u32 / 2));
+
+    // Maximum usable source radius (circular cutoff)
+    let max_radius = (in_cols.min(in_rows) as f64) * 0.5;
 
     let r_start = r_start.rem_euclid(2.0 * PI);
     let width = PI / n as f64;
@@ -30,21 +44,30 @@ pub fn kaleidoscope(
             let dy = y - co_y as i32;
 
             let mag_p = ((dx * dx + dy * dy) as f64).sqrt() / scale;
+
+            // Radial cutoff in source space
+            if mag_p > max_radius {
+              //  continue;
+            }
+
             let theta_p =
-                (((dx as f64).atan2(dy as f64) - r_out).rem_euclid(2.0 * width) - width)
+                (((dx as f64).atan2(dy as f64) - r_out)
+                    .rem_euclid(2.0 * width)
+                    - width)
                     .abs()
                     + r_start;
 
             let src_x = (mag_p * theta_p.cos() + c_x as f64).round() as i32;
             let src_y = (mag_p * theta_p.sin() + c_y as f64).round() as i32;
 
-            if src_x >= 0 && src_x < in_cols && src_y >= 0 && src_y < in_rows {
-                output.put_pixel(
-                    x as u32,
-                    y as u32,
-                    *img.get_pixel(src_x as u32, src_y as u32),
-                );
-            }
+            let src_x = mirror(src_x, in_cols);
+            let src_y = mirror(src_y, in_rows);
+
+            output.put_pixel(
+                x as u32,
+                y as u32,
+                *img.get_pixel(src_x as u32, src_y as u32),
+            );
         }
     }
 

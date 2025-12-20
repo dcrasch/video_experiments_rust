@@ -1,20 +1,10 @@
-:root { --bg: #0e0e11; --fg: #eaeaf0; --card: #15151b; }
+:root { --bg: black; --fg: #eaeaf0; --card: #15151b; }
 html, body, #main { height: 100%; margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto; }
 .wrap { display: grid; grid-template-columns: 320px 1fr; height: 100%; }
 .panel { padding: 16px; background: var(--card); box-shadow: inset -1px 0 0 #222; }
 .start { display: grid; place-items: center; gap: 12px; }
 .btn { padding: 10px 14px; border-radius: 10px; border: 1px solid #2a2a35; background: #1d1d27; color: var(--fg); cursor: pointer; }
 .row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin: 10px 0; }
-.kaleido {
-    width: min(90vmin, 900px);
-    aspect-ratio: 1;
-    background-image: var(--img);
-    background-size: cover;
-    transform: rotate(var(--rot)) scale(var(--scale));
-    /* Kaleidoscope via conic mask */
-    -webkit-mask: repeating-conic-gradient(#000 0deg, #000 calc(180deg / var(--seg)), transparent calc(180deg / var(--seg)), transparent calc(360deg / var(--seg)));
-    mask: repeating-conic-gradient(#000 0deg, #000 calc(180deg / var(--seg)), transparent calc(180deg / var(--seg)), transparent calc(360deg / var(--seg)));
-}
 
 viewer {
     display: grid;
@@ -38,4 +28,12 @@ viewer {
     height: 75px;
     object-fit: contain;
     image-rendering: auto;
+}
+
+/* For Chrome, Safari, Opera, and Edge  */
+input[type='range']::-moz-range-track,
+input[type="range"]::-webkit-slider-runnable-track {
+	 border-radius: 20px;
+	 border: 1px solid white;
+	 background-color: rgba(0.1,0.1,0.1,0.1);
 }
